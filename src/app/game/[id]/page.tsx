@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { GameProps } from "@/types";
+import RoundTable from "@/components/roundTable";
 
 export default function Game({ params }: { params: { id: string } }) {
   // console.log({ params })
@@ -33,12 +34,14 @@ export default function Game({ params }: { params: { id: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
       <h2 className="text-4xl uppercase mb-10">Game {params.id}</h2>
-      <h3>Players</h3>
-      <ul>
+      <h3 className="text-3xl uppercase mb-2">Players</h3>
+      <ul className="mb-10">
         {game.players && game.players.map((player) => (
           <li key={player.name}>{player.name}</li>
         ))}
       </ul>
+      <h3 className="text-3xl uppercase mb-2">Rounds</h3>
+      <RoundTable rounds={game.rounds} players={game.players}></RoundTable>
     </main>
   )
 }

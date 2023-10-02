@@ -30,7 +30,7 @@ export default function Home() {
             }
           ]
         },
-        { id: 1,
+        { id: 2,
           scores: [
             { value: -2,
               user: { 

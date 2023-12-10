@@ -8,6 +8,7 @@ type Props = {
 }
 
 export default function RoundTable({ rounds, players, totals }: Props) {
+  // console.log(rounds);
 
   return (
     <table className="border-collapse table-auto w-full text-sm">
@@ -20,11 +21,11 @@ export default function RoundTable({ rounds, players, totals }: Props) {
       </tr>
     </thead>
     <tbody className="bg-white dark:bg-slate-800">
-      {rounds.map((round) => (
-          <tr key={round.id}>
-            <td className="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">Round {round.id}</td>
-            {round.scores.map((score) => (
-              <td key={score.user.id} className="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">{score.value}</td>
+      {rounds.map((round, index) => (
+          <tr key={index}>
+            <td className="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">Round {index + 1}</td>
+            {round.map((score) => (
+              <td key={score.userId} className="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">{score.value}</td>
             ))}
           </tr>
         ))}

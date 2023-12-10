@@ -14,38 +14,22 @@ export default function Home() {
       id: games.length + 1,
       finished: false,
       rounds: [
-        { id: 1,
-          scores: [
+        [
             { value: 10,
-              user: { 
-                id: 1,
-                name: "Tom"
-              }
+              userId: "1"
             },
             { value: 16,
-              user: { 
-                id: 2,
-                name: "Amanda"
-              }
+              userId: "2"
             }
-          ]
-        },
-        { id: 2,
-          scores: [
-            { value: -2,
-              user: { 
-                id: 1,
-                name: "Tom"
-              }
-            },
-            { value: 24,
-              user: { 
-                id: 2,
-                name: "Amanda"
-              }
-            }
-          ]
-        }
+        ],
+        [
+          { value: -2,
+            userId: "1"
+          },
+          { value: 14,
+            userId: "2"
+          }
+        ],
       ], 
       players: [
         { id: 1, name: "Tom"},

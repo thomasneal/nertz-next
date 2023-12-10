@@ -5,14 +5,11 @@ export type GameProps = {
   players: User[]
 }
 
-export type Round = {
-  id: number,
-  scores: Score[]
-}
+export type Round = Score[];
 
 export type Score = {
   value: number,
-  user: User
+  userId: string
 }
 
 export type User = {

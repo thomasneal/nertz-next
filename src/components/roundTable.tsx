@@ -8,7 +8,6 @@ type Props = {
 }
 
 export default function RoundTable({ rounds, players, totals }: Props) {
-  // console.log(rounds);
 
   return (
     <table className="border-collapse table-auto w-full text-sm">

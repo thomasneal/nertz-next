@@ -9,7 +9,6 @@ export default function Game({ params }: { params: { id: number } }) {
   const [totals, setTotals] = useState<Total[]>([]);
 
  useEffect(() => {
- 
   let itemsArray;
   const stringToParse = localStorage.getItem("games");
   if (stringToParse) {
@@ -66,11 +65,20 @@ export default function Game({ params }: { params: { id: number } }) {
         itemsArray = JSON.parse(stringToParse);
       }
       if (itemsArray) {
-        const updatedGames = itemsArray.map((gameItem:GameProps) => (gameItem.id == params.id ? { ...gameItem, ...game } : game ));
+        const updatedGames = itemsArray.map((gameItem:GameProps) => (gameItem.id == params.id ? { ...gameItem, ...game } : gameItem ));
         localStorage.setItem("games", JSON.stringify(updatedGames));
       }
     }
   }, [game, params.id]);
+
+  useEffect(() => {
+    if (totals && game.finished === false) {
+      const scoreHundred = totals.filter((total) => total.score >= 100);
+      if (scoreHundred.length > 0) {
+        setGame({ ...game, finished: true});
+      }
+    }
+  }, [totals, game]);
 
   const handleAddRound = (formData: FormData) => {
     const updatedRounds = updateRounds(game.rounds, game.players, formData);
@@ -88,18 +96,20 @@ export default function Game({ params }: { params: { id: number } }) {
       <h2 className="text-4xl uppercase mb-10">Game {params.id}</h2>
       <h3 className="text-3xl uppercase mb-2">Rounds</h3>
       <RoundTable rounds={game.rounds} players={game.players} totals={totals}></RoundTable>
-
-      <form className="mt-12" action={handleAddRound}>
-      {game.players.map((player) => (
-         <div className="mb-4" key={player.id}>
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={player.id.toString()}>
-          {player.name}
-            <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name={`player-${player.id}`} id={player.id.toString()} type="text" />
-          </label>  
-        </div>
-        ))}
-         <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white mt-4 font-bold py-2 px-4 rounded">Add New Round +</button>
-      </form>
+      {!(game.finished) && (
+         <form className="mt-12" action={handleAddRound}>
+         {game.players.map((player) => (
+            <div className="mb-4" key={player.id}>
+             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={player.id.toString()}>
+             {player.name}
+               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name={`player-${player.id}`} id={player.id.toString()} type="text" />
+             </label>  
+           </div>
+           ))}
+            <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white mt-4 font-bold py-2 px-4 rounded">Add New Round +</button>
+         </form>
+      )}
+     
     </main>
   )
 } 

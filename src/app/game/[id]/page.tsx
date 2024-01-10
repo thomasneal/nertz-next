@@ -1,12 +1,26 @@
 'use client';
 import { useEffect, useState } from "react";
-import { GameProps, Total } from "@/types";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { GameProps, Total, Score } from "@/types";
 import RoundTable from "@/components/roundTable";
 import { updateRounds } from "@/utils";
+
+type Scores = { [userKey: string]: number };
 
 export default function Game({ params }: { params: { id: number } }) {
   const [game, setGame] = useState<GameProps>({ id: params.id, finished: false, rounds: [], players: []});
   const [totals, setTotals] = useState<Total[]>([]);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Scores>();
+  const onSubmit: SubmitHandler<Scores> = (data) => {
+      console.log("errors", errors);
+      console.log("data", data);
+    handleAddRound(data);
+  }
 
  useEffect(() => {
   let itemsArray;
@@ -23,6 +37,7 @@ export default function Game({ params }: { params: { id: number } }) {
   useEffect(() => {
   const getTotals: Total[] = game.rounds.reduce((acc, round) => {
     const roundScore: { [key: string]: number } = {};
+
     round.forEach((score) => {
       roundScore[score.userId] = score.value;
     });
@@ -80,7 +95,7 @@ export default function Game({ params }: { params: { id: number } }) {
     }
   }, [totals, game]);
 
-  const handleAddRound = (formData: FormData) => {
+  const handleAddRound = (formData: any) => {
     const updatedRounds = updateRounds(game.rounds, game.players, formData);
 
     const updatedGame = {
@@ -97,12 +112,19 @@ export default function Game({ params }: { params: { id: number } }) {
       <h3 className="text-3xl uppercase mb-2">Rounds</h3>
       <RoundTable rounds={game.rounds} players={game.players} totals={totals}></RoundTable>
       {!(game.finished) && (
-         <form className="mt-12" action={handleAddRound}>
+         <form className="mt-12" onSubmit={handleSubmit(onSubmit)}>
          {game.players.map((player) => (
             <div className="mb-4" key={player.id}>
              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={player.id.toString()}>
              {player.name}
-               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name={`player-${player.id}`} id={player.id.toString()} type="text" />
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="number"
+                required
+                id={player.id.toString()} 
+                {...register(`${player.id}`, { required: true })}
+                aria-invalid={errors[player.id] ? "true" : "false"}
+              />
              </label>  
            </div>
            ))}

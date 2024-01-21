@@ -8,15 +8,16 @@ export default function Game({ params }: { params: { id: number } }) {
   const [game, setGame] = useState<GameProps>({ id: params.id, finished: false, rounds: [], players: []});
   const [totals, setTotals] = useState<Total[]>([]);
 
+
  useEffect(() => {
   let itemsArray;
   const stringToParse = localStorage.getItem("games");
   if (stringToParse) {
-    itemsArray = JSON.parse(stringToParse);
+    itemsArray = JSON.parse(stringToParse) as GameProps[];
   }
   if (itemsArray) {
-    const found = itemsArray.find((item:number) => item = params.id);
-    setGame(found);
+    const found = itemsArray.find((item) => item.id == params.id);
+    if (found) setGame(found);
   }
 }, [params.id]);
 
@@ -95,7 +96,9 @@ export default function Game({ params }: { params: { id: number } }) {
     <main className="flex min-h-screen flex-col items-center p-8">
       <h2 className="text-4xl uppercase mb-10">Game {params.id}</h2>
       <h3 className="text-3xl uppercase mb-2">Rounds</h3>
-      <RoundTable rounds={game.rounds} players={game.players} totals={totals}></RoundTable>
+      {game.rounds && (
+        <RoundTable rounds={game.rounds} players={game.players} totals={totals}></RoundTable>
+      )}
       {!(game.finished) && (
          <form className="mt-12" action={handleAddRound}>
          {game.players.map((player) => (

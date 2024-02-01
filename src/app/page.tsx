@@ -1,13 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { GameProps } from '@/types';
+import { GamesContext } from '@/contexts/games';
 
 
 export default function Home() {
   const router = useRouter();
-  const [games, setGames] = useState<GameProps[]>([]);
+  const  { games, setGames } = useContext(GamesContext);
 
   const newGameProps:GameProps =
     {
@@ -37,22 +38,8 @@ export default function Home() {
       ]
     };
 
-  useEffect(() => {
-    const stringToParse = localStorage.getItem("games");
-    if (stringToParse) {
-      const itemsArray = JSON.parse(stringToParse);
-      setGames(itemsArray);
-    }
-    
-  }, []);
-
-  useEffect(() => {
-    if (games.length > 0) {
-      localStorage.setItem("games", JSON.stringify(games));
-    }
-  }, [games]);
-
   const handleAddGame = () => {
+    console.log({ games, newGameProps });
     setGames([...games, newGameProps]);
     //router.push('/game');
 

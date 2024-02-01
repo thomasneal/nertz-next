@@ -1,9 +1,11 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { GameProps, Total, Score } from "@/types";
 import RoundTable from "@/components/roundTable";
 import { updateRounds } from "@/utils";
+import { GamesContext } from '@/contexts/games';
+import Link from "next/link";
 
 type Scores = { [userKey: string]: number };
 
@@ -16,24 +18,23 @@ export default function Game({ params }: { params: { id: number } }) {
     watch,
     formState: { errors },
   } = useForm<Scores>();
+
   const onSubmit: SubmitHandler<Scores> = (data) => {
       console.log("errors", errors);
       console.log("data", data);
     handleAddRound(data);
   }
 
+  const { games } = useContext(GamesContext);
+
+  console.log("games from context", games);
 
  useEffect(() => {
-  let itemsArray;
-  const stringToParse = localStorage.getItem("games");
-  if (stringToParse) {
-    itemsArray = JSON.parse(stringToParse) as GameProps[];
-  }
-  if (itemsArray) {
-    const found = itemsArray.find((item) => item.id == params.id);
+  if (games.length > 0) {
+    const found = games.find((g) => g.id == params.id);
     if (found) setGame(found);
   }
-}, [params.id]);
+}, [games, params.id]);
 
   useEffect(() => {
   const getTotals: Total[] = game.rounds.reduce((acc, round) => {
@@ -109,6 +110,7 @@ export default function Game({ params }: { params: { id: number } }) {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8">
+      <Link className="self-start" href={`/`}>&lt; Back to Games</Link>
       <h2 className="text-4xl uppercase mb-10">Game {params.id}</h2>
       <h3 className="text-3xl uppercase mb-2">Rounds</h3>
       {game.rounds && (

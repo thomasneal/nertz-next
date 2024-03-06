@@ -8,7 +8,7 @@ export const updateRounds = (rounds: Round[], players:User[], formData: any): Ro
     if (player.id in formData) {
       const newScore: Score = {
         value: Number(formData[player.id]),
-        userId: player.id.toString(),
+        userId: player.id,
       }
       newRound.push(newScore);
     }

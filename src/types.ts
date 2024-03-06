@@ -9,7 +9,7 @@ export type Round = Score[];
 
 export type Score = {
   value: number,
-  userId: string
+  userId: number
 }
 
 export type User = {

@@ -2,25 +2,22 @@
 
 import {
   createContext,
-  useState,
   Dispatch,
-  SetStateAction,
   useEffect,
   useReducer
 } from "react";
+import GameReducer, { Actions } from "@/reducer";
 import { GameProps } from "@/types";
 
 type GamesContext = {
   games: GameProps[];
-  setGames: React.Dispatch<React.SetStateAction<GameProps[]>>;
+  dispatch: Dispatch<Actions>;
 };
 
 const defaultData: GamesContext = {
   games: [],
-  setGames: () => null,
+  dispatch: () => null
 };
-
-
 
 export const GamesContext = createContext<GamesContext>(defaultData);
 
@@ -28,24 +25,24 @@ interface Props {
   children: React.ReactNode;
 }
 
-function getFromLocalStorage() {
-  const items = localStorage.getItem('games');
-  return items ? JSON.parse(items) : [];
-}
-
 
 export const GamesProvider: React.FC<Props> = ({ children }) => {
-  const [games, setGames] = useState<GameProps[]>(getFromLocalStorage);
+  const [state, dispatch] = useReducer(GameReducer, { games: []});
 
   useEffect(() => {
-    console.log("setting games");
-    console.log({ games });
-    localStorage.setItem('games', JSON.stringify(games))
-  }, [games]);
+      dispatch({ type: 'HYDRATE_GAMES' })
+  }, []);
+
+  // update localstorage when games update
+  useEffect(() => {
+    if (state.games.length > 0) {
+      localStorage.setItem('games', JSON.stringify(state.games))
+    }
+  }, [state.games]);
 
 
   return (
-    <GamesContext.Provider value={{ games, setGames }}>
+    <GamesContext.Provider value={{ games: state.games, dispatch }}>
       {children}
     </GamesContext.Provider>
   );

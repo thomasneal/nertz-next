@@ -1,6 +1,6 @@
 'use client';
 
-import { GameProps } from "./types";
+import { GameProps, Scores } from "./types";
 import { updateRounds } from "./utils";
 
 type State = {
@@ -18,7 +18,7 @@ type HydrateGames = {
 type CreateRound = {
   type: "CREATE_ROUND",
   id: number,
-  data: any,
+  data: Scores,
 };
 
 type UpdateGames = {
@@ -56,7 +56,11 @@ export const generateNewGame = (id: number): GameProps => ({
     players: [
       { id: 1, name: "Tom"},
       { id: 2, name: "Amanda"}
-    ]
+    ],
+    totals: [
+      { userId: 1, value: 8},
+      { userId: 2, value: 30}
+    ],
   });
 
   export function getFromLocalStorage() {
@@ -68,7 +72,6 @@ export default function GameReducer(state: State, action: Actions) {
   switch (action.type) {
     case "HYDRATE_GAMES": {
       const games = getFromLocalStorage();
-      console.log({ games });
 
       return {
         ...state,
@@ -86,27 +89,40 @@ export default function GameReducer(state: State, action: Actions) {
     }
 
     case "CREATE_ROUND": {
-      console.log('CREATE_ROUND');
-      let updatedGame;
       const game = state.games.find((g) => g.id == action.id);
-      if (game) {
-        const updatedRounds = updateRounds(game.rounds, game.players, action.data);
-        updatedGame = {
-          ...game,
-          rounds: updatedRounds
+      if (!game) return state;
+
+      const updatedRounds = updateRounds(game.rounds, game.players, action.data);
+
+      const newTotals = game.totals.map((total) => {
+        const { userId, value } = total;
+
+        const newTotal = value + action.data[userId];
+
+        return {
+          userId,
+          value: newTotal
         }
+      })
+
+      const updatedGame = {
+          ...game,
+          rounds: updatedRounds,
+          totals: newTotals
+        }
+
         
-        state.games.splice((action.id - 1), 1, updatedGame);
-      
+        
         return {
           ...state,
-         games: [...state.games]
-        }
-      }
+          games: state.games.map(game => {
+            if (game.id == action.id ){
+              return updatedGame;
+            }
 
-      return {
-        ...state,
-      };
+            return game;
+          })
+        };
     }
 
     case "DELETE_GAME": {

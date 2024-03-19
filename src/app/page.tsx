@@ -1,61 +1,17 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { GameProps } from '@/types';
-
+import { GamesContext } from '@/contexts/games';
 
 export default function Home() {
   const router = useRouter();
-  const [games, setGames] = useState<GameProps[]>([]);
-
-  const newGameProps:GameProps =
-    {
-      id: games.length + 1,
-      finished: false,
-      rounds: [
-        [
-            { value: 10,
-              userId: "1"
-            },
-            { value: 16,
-              userId: "2"
-            }
-        ],
-        [
-          { value: -2,
-            userId: "1"
-          },
-          { value: 14,
-            userId: "2"
-          }
-        ],
-      ], 
-      players: [
-        { id: 1, name: "Tom"},
-        { id: 2, name: "Amanda"}
-      ]
-    };
-
-  useEffect(() => {
-    const stringToParse = localStorage.getItem("games");
-    if (stringToParse) {
-      const itemsArray = JSON.parse(stringToParse);
-      setGames(itemsArray);
-    }
-    
-  }, []);
-
-  useEffect(() => {
-    if (games.length > 0) {
-      localStorage.setItem("games", JSON.stringify(games));
-    }
-  }, [games]);
-
+  const  { games, dispatch } = useContext(GamesContext);
+  
   const handleAddGame = () => {
-    setGames([...games, newGameProps]);
-    //router.push('/game');
-
+    dispatch({ type: 'CREATE_GAME'})
+    // router.push('/game');
   }
 
   return (
